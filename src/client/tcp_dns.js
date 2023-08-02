@@ -1,4 +1,5 @@
 const net = require('net')
+const tls = require('tls');
 const dns = require('dns')
 
 module.exports = function (client, options) {
@@ -22,7 +23,7 @@ module.exports = function (client, options) {
           // Error resolving domain
           if (err) {
             // Could not resolve SRV lookup, connect directly
-            client.setSocket(net.connect(options.port, options.host))
+            client.setSocket(options.tlsOptions ? tls.connect(options.port, options.host, options.tlsOptions) : net.connect(options.port, options.host))
             return
           }
 
@@ -30,15 +31,15 @@ module.exports = function (client, options) {
           if (addresses && addresses.length > 0) {
             options.host = addresses[0].name
             options.port = addresses[0].port
-            client.setSocket(net.connect(addresses[0].port, addresses[0].name))
+            client.setSocket(options.tlsOptions ? tls.connect(addresses[0].port, addresses[0].name, options.tlsOptions) : net.connect(addresses[0].port, addresses[0].name))
           } else {
             // Otherwise, just connect using the provided hostname and port
-            client.setSocket(net.connect(options.port, options.host))
+            client.setSocket(options.tlsOptions ? tls.connect(options.port, options.host, options.tlsOptions) : net.connect(options.port, options.host))
           }
         })
       } else {
         // Otherwise, just connect using the provided hostname and port
-        client.setSocket(net.connect(options.port, options.host))
+        client.setSocket(options.tlsOptions ? tls.connect(options.port, options.host, options.tlsOptions) : net.connect(options.port, options.host))
       }
     }
   }
