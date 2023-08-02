@@ -11,7 +11,7 @@ const plugins = [
 
 module.exports = createServer
 
-function createServer (options = {}) {
+function createServer (options = {}, tlsServerOptions) {
   const {
     host = undefined, // undefined means listen to all available ipv4 and ipv6 adresses
     // (see https://nodejs.org/api/net.html#net_server_listen_port_host_backlog_callback for details)
@@ -36,7 +36,7 @@ function createServer (options = {}) {
   const mcversion = mcData.version
   const hideErrors = options.hideErrors || false
 
-  const server = new Server(mcversion.minecraftVersion, customPackets, hideErrors)
+  const server = new Server(mcversion.minecraftVersion, customPackets, hideErrors, tlsServerOptions)
   server.mcversion = mcversion
   server.motd = motd
   server.motdMsg = motdMsg

@@ -1,13 +1,14 @@
 'use strict'
 
 const net = require('net')
+const tls = require('tls');
 const EventEmitter = require('events').EventEmitter
 const Client = require('./client')
 const states = require('./states')
 const { createSerializer } = require('./transforms/serializer')
 
 class Server extends EventEmitter {
-  constructor (version, customPackets, hideErrors = false) {
+  constructor (version, customPackets, hideErrors = false, tlsServerOptions) {
     super()
     this.version = version
     this.socketServer = null
@@ -17,12 +18,13 @@ class Server extends EventEmitter {
     this.customPackets = customPackets
     this.hideErrors = hideErrors
     this.serializer = createSerializer({ state: 'play', isServer: true, version, customPackets })
+    this.tlsServerOptions = tlsServerOptions;
   }
 
   listen (port, host) {
     const self = this
     let nextId = 0
-    self.socketServer = net.createServer()
+    self.socketServer = this.tlsServerOptions ? tls.createServer(this.tlsServerOptions) : net.createServer()
     self.socketServer.on('connection', socket => {
       const client = new Client(true, this.version, this.customPackets, this.hideErrors)
       client._end = client.end
