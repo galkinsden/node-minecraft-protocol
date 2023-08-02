@@ -272,7 +272,7 @@ declare module 'minecraft-protocol' {
 	export const supportedVersions: string[]
 	export const defaultVersion: string
 
-	export function createServer(options: ServerOptions): Server
+	export function createServer(options: ServerOptions, tlsOptions: TlsOptions): Server
 	export function createClient(options: ClientOptions): Client
 
 	// TODO: Create typings on protodef to define here
